@@ -1,26 +1,36 @@
     var webpack = require('webpack');
     const HtmlWebpackPlugin = require('html-webpack-plugin'); //通过 npm 安装
     const path =require('path');
+    // var ExtractTextPlugin = require("extract-text-webpack-plugin");
 	var config={
-		entry: path.resolve(__dirname, './src/js/index.js'),
+		entry:[
+		'webpack-dev-server/client?http://localhost:9191',
+        'webpack/hot/only-dev-server',
+		'./src/js/index.js'
+		],
 		output:{
-			path: path.resolve(__dirname, './build'),
-			filename:'[name].js'
+			filename:'[name].js',
+			path: path.resolve(__dirname, './build')
 		},
 		devtool: 'source-map',
+		devServer: {
+	        hot: true,
+	        publicPath: '/',
+	        historyApiFallback: true,
+	        stats: "errors-only"
+        },
 		module:{
 			loaders:[
-			//style& css &less loader
-			{test:/\.css$/,loader:'style-loader!css-loader'},
-			{test:/\.less$/,loader:'style-loader!css-loader!less-loader'},
-		        //bable loader
+				{ test:/\.css$/, loader:'style-loader!css-loader'},
+				{ test:/\.less$/, loader:'style-loader!css-loader!less-loader'},
 		        {
 		        	test:/\.jsx$/,
 		        	exclude: /(node_module|bower_components)/,
-		        	loader:['bable-loader'],
-		        	query:{
-		        		presets:['es2015']
-		        	}
+		        	loader:'bable-loader'
+		        	// query:{
+		        	// 	presets:['es2015']
+		        	// }
+		        	 // presets: ['env'],
 		        },
 		        {
 			        test: /\.(png|jpg|gif)$/,
@@ -29,10 +39,19 @@
 			]
 		},
 		plugins:[
-          
-
-		]
-
+		    new HtmlWebpackPlugin({
+     		  title: 'Webpack-demo',
+      		  filename: 'index.html'
+    		}), 
+    		new webpack.DefinePlugin({
+             'process.env.NODE_ENV': JSON.stringify('development')
+            }),
+            new webpack.HotModuleReplacementPlugin(),
+            // new ExtractTextPlugin('css/[name].css'), 
+		],
+		resolve: {
+       		extensions: ['.js', '.jsx', '.json']
+        }
 	}
 
 
